@@ -17,14 +17,9 @@
 <script setup lang="ts">
 const goods = ref([]);
 const goodsGroup = ref({});
-
+const { $api } = useNuxtApp();
 onMounted(async () => {
-  const goodsRes = await $fetch('/api/getGoods', {
-    method: 'POST',
-    body: {
-      limit: 1000,
-    },
-  });
+  const goodsRes = await $api.ozon.getGoods();
 
   if (!goodsRes.items) {
     console.error('Error with getting goods!');

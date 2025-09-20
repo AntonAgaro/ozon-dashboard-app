@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const CLIENT_ID = process.env.CLIENT_ID;
-  const API_KEY = process.env.API_KEY;
+  const CLIENT_ID = process.env.CLIENT_ID ?? '';
+  const API_KEY = process.env.API_KEY ?? '';
   const res = await fetch('https://api-seller.ozon.ru/v1/analytics/stocks', {
     method: 'POST',
     headers: {
@@ -10,7 +10,8 @@ export default defineEventHandler(async (event) => {
       'Api-Key': API_KEY,
     },
     body: JSON.stringify({
-      skus: body?.skus,
+      //TODO нужно сделать пагинацию
+      skus: body?.skus.slice(0, 100),
     }),
   });
 
