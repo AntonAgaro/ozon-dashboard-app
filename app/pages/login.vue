@@ -9,7 +9,7 @@
         <UInput v-model="state.password" class="w-full" />
       </UFormField>
 
-      <UButton type="submit"> Отправить </UButton>
+      <UButton type="submit" :loading="isLoading"> Отправить </UButton>
     </UForm>
   </div>
 </template>
@@ -20,18 +20,22 @@ const { set, get } = useAuthStore();
 if (get('isLogged')) {
   navigateTo('/');
 }
+
 const state = reactive({
   login: '',
   password: '',
 });
+const isLoading = ref(false);
 
 const { $api } = useNuxtApp();
 
 async function onSubmit() {
+  isLoading.value = true;
   const res = await $api.auth.login(state);
   if (res.status === 'success') {
     set('isLogged', true);
     navigateTo('/');
   }
+  isLoading.value = false;
 }
 </script>
