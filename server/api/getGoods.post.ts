@@ -16,7 +16,5 @@ export default defineEventHandler(async (event) => {
     }),
   });
 
-  const json = await res.json();
-  // console.log(json);
-  return json;
+  return await res.json();
 });

@@ -7,8 +7,3 @@ export type Repositories = {
 export enum RepositoryName {
   Ozon = 'ozon',
 }
-
-export type ApiResponse = {
-  status: string;
-  message?: string;
-};

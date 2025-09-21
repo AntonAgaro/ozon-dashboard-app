@@ -1,5 +1,6 @@
 import { RepositoryFactory } from '~/repository/RepositoryFactory';
-import type { getGoodsResponse, getRemainsResponse } from '~/repository/OzonRepository/types';
+import type { getGoodsResponse } from '~~/shared/Good/types';
+import type { getRemainsApiResponse } from '~~/shared/Remains/types';
 
 export class OzonRepository extends RepositoryFactory {
   async getGoods(params: { limit?: number } = {}) {
@@ -12,9 +13,9 @@ export class OzonRepository extends RepositoryFactory {
     });
   }
 
-  async getRemains(params: { skus: string[] }) {
+  async getRemains(params: { skus?: string[] } = {}) {
     const { skus } = params;
-    return this.call<getRemainsResponse>('/api/getRemains', {
+    return this.call<getRemainsApiResponse>('/api/getRemains', {
       method: 'POST',
       body: {
         skus,

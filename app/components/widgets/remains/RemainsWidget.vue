@@ -1,13 +1,26 @@
 <template>
-  <UTable :sticky="true" class="sticky-first-col h-[80vh]" :columns="uiColumns" :data="uiRows"> </UTable>
+  <div>
+    <UCard>
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <h2 class="text-xl font-semibold">Остатки товаров</h2>
+        <div v-if="props.goodsCount && clusterOrder.length" class="text-sm text-gray-500">
+          <span>{{ props.goodsCount }} товаров</span>
+          <span class="mx-1">•</span>
+          <span>{{ clusterOrder.length }} складов / clusters</span>
+        </div>
+      </div>
+    </UCard>
+    <UTable :sticky="true" class="mt-6 sticky-first-col h-[80vh]" :columns="uiColumns" :data="uiRows"> </UTable>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { RemainGoodItem } from '~/features/Remains/types';
-import type { Cluster } from '~/features/Cluster/types';
+import type { RemainGoodItem } from '#shared/Remains/types';
+import type { Cluster } from '#shared/Cluster/types';
 
 const props = defineProps<{
   items: RemainGoodItem[];
+  goodsCount: number;
 }>();
 
 //TODO убрать те, у которых вообще нет товаров

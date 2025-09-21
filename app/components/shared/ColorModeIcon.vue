@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { AppThemes } from '~/shared/UxConfig/types';
+import { AppThemes } from '#shared/UxConfig/types';
 
 const colorMode = useColorMode();
 

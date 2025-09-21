@@ -1,3 +1,5 @@
+import type { ApiResponse } from '#shared/types';
+
 export type RemainGoodItem = {
   ads: number;
   ads_cluster: number;
@@ -27,4 +29,13 @@ export type RemainGoodItem = {
   waiting_docs_stock_count: number;
   warehouse_id: number;
   warehouse_name: string;
+};
+
+export type getRemainsOzonResponse = ApiResponse & {
+  items: RemainGoodItem[];
+};
+
+export type getRemainsApiResponse = ApiResponse & {
+  items: RemainGoodItem[];
+  goodsCount: number;
 };
