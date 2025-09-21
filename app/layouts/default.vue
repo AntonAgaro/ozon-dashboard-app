@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <AppHeader />
-    <slot />
-  </div>
+  <UApp>
+    <div class="container">
+      <AppHeader />
+      <slot />
+    </div>
+  </UApp>
 </template>
 
 <script setup lang="ts">

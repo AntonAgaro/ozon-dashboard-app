@@ -1,2 +1,13 @@
 @import "../../../node_modules/tailwindcss";
 @import "../../../node_modules/@nuxt/ui";
+
+html, body, #__nuxt {
+    height: 100%;
+}
+
+.container {
+    margin: 0 auto;
+    height: 100%;
+    max-width: 1200px;
+    padding: 0 12px;
+}

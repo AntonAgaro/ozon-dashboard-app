@@ -11,6 +11,7 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.1",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.1.2",
@@ -20,6 +21,7 @@
     "@nuxt/eslint": "1.9.0",
     "@nuxt/test-utils": "3.19.2",
     "@nuxt/ui": "3.3.2",
+    "jsonwebtoken": "^9.0.2",
     "nuxt": "^4.0.3",
     "typescript": "^5.6.3",
     "vue": "^3.5.20",
