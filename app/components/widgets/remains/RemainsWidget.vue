@@ -34,10 +34,13 @@ const clusterOrder = computed<Cluster[]>(() => {
   return Array.from(map, ([id, name]) => ({ id, name }));
 });
 
-//Собираем колонки. Первая для товаров, остальные с названиями кластеров
+//Собираем колонки. Товары, Остатки, Остатки по каждому кластеру
 type Col = { accessorKey: string; header: string };
 const uiColumns = computed(() => {
-  const cols: Col[] = [{ accessorKey: 'goodId', header: 'Товары' }];
+  const cols: Col[] = [
+    { accessorKey: 'goodId', header: 'Товары' },
+    { accessorKey: 'remains', header: 'Остаток' },
+  ];
   for (const cluster of clusterOrder.value) {
     cols.push({ accessorKey: `cluster-${cluster.id}`, header: cluster.name });
   }
@@ -62,12 +65,17 @@ const uiRows = computed(() => {
     const good = byGood.get(offer_id)!;
     const clusterName = `cluster-${cluster_id}`;
     good.cells[clusterName] = available_stock_count ?? 0;
+    good.cells['remains'] = (good.cells['remains'] ?? 0) + (available_stock_count ?? 0);
   }
 
   // console.log(byGood);
 
   const rows = Array.from(byGood.values()).map((good) => {
-    const row: Record<string, any> = { goodId: good.goodId, class: { td: 'c-red' } };
+    const row: Record<string, any> = {
+      goodId: good.goodId,
+      class: { td: 'c-red' },
+      remains: good.cells['remains'] ?? 0,
+    };
     for (const cluster of clusterOrder.value) {
       row[`cluster-${cluster.id}`] = good.cells[`cluster-${cluster.id}`] ?? 0;
     }
