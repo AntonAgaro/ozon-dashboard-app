@@ -8,6 +8,7 @@
           <span class="mx-1">•</span>
           <span>{{ clusterOrder.length }} складов / clusters</span>
         </div>
+        <UButton size="sm" @click="exportToCsv">💾 Export CSV</UButton>
       </div>
     </UCard>
     <UTable :sticky="true" class="mt-6 sticky-first-col h-[80vh]" :columns="uiColumns" :data="uiRows"> </UTable>
@@ -86,6 +87,24 @@ const uiRows = computed(() => {
 
   return rows;
 });
+
+function exportToCsv() {
+  const headers = uiColumns.value.map((c) => c.header);
+  const keys = uiColumns.value.map((c) => c.accessorKey);
+
+  const rows = uiRows.value.map((row) => keys.map((key) => row[key] ?? '').join(','));
+
+  const csvContent = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' }); // \ufeff fixes UTF-8 in Excel
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `remains_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 </script>
 
 <style>
