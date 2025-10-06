@@ -38,4 +38,5 @@ export type getRemainsOzonResponse = ApiResponse & {
 export type getRemainsApiResponse = ApiResponse & {
   items: RemainGoodItem[];
   goodsCount: number;
+  skus: string[];
 };

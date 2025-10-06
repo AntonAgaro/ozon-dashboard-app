@@ -66,7 +66,7 @@ export default defineCachedEventHandler(
       // console.log('Remains length: ', remains.length);
     }
 
-    return { status: 'success', items: remains, goodsCount: skus.length };
+    return { status: 'success', items: remains, skus: skus, goodsCount: skus.length };
   },
   { maxAge: 60 * 30 }
 );

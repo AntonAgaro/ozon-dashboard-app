@@ -92,12 +92,23 @@ function exportToCsv() {
   const headers = uiColumns.value.map((c) => c.header);
   const keys = uiColumns.value.map((c) => c.accessorKey);
 
-  const rows = uiRows.value.map((row) => keys.map((key) => row[key] ?? '').join(','));
+  const escapeCsv = (val: any) => {
+    if (val == null) return '';
+    const str = String(val).replace(/"/g, '""');
+    return `"${str}"`;
+  };
 
-  const csvContent = [headers.join(','), ...rows].join('\n');
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' }); // \ufeff fixes UTF-8 in Excel
+  // Excel expects semicolons instead of commas (especially with Russian locale)
+  const rows = uiRows.value.map((row) => keys.map((key) => escapeCsv(row[key])).join(';'));
+
+  // UTF-8 BOM + semicolon-delimited content
+  const csvContent = '\ufeff' + [headers.map(escapeCsv).join(';'), ...rows].join('\r\n');
+
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+
   const url = URL.createObjectURL(blob);
-
   const link = document.createElement('a');
   link.href = url;
   link.setAttribute('download', `remains_${new Date().toISOString().split('T')[0]}.csv`);

@@ -21,6 +21,14 @@ if (!remainsRes.items && !Array.isArray(remainsRes.items)) {
     Remains: ${remainsRes}`);
 }
 tableItems.value = remainsRes.items;
+
+// onMounted(() => {
+//   const uniqs = new Set([...remainsRes.items.map((i) => i.sku.toString())]);
+//   console.log(uniqs);
+//   console.log(remainsRes.skus);
+//   const missing = remainsRes.skus.filter((i) => !uniqs.has(i));
+//   console.log(missing);
+// });
 </script>
 
 <style scoped></style>
