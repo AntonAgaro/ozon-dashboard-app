@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
   const CLIENT_ID = process.env.CLIENT_ID ?? '';
   const API_KEY = process.env.API_KEY ?? '';
   const skus: string[] = body?.skus ?? [];
+  let allGoods: getGoodsResponse | null = null;
 
   if (!body?.skus) {
     const goodsRes = await nitro.localFetch('/api/getGoods', {
@@ -23,9 +24,9 @@ export default defineEventHandler(async (event) => {
       throw new Error(`Failed to fetch goods: ${goodsRes.statusText}`);
     }
 
-    const goodsJson = (await goodsRes.json()) as getGoodsResponse;
+    allGoods = (await goodsRes.json()) as getGoodsResponse;
 
-    goodsJson.items.forEach((good) => {
+    allGoods.items.forEach((good) => {
       const stock = good?.stocks[0];
 
       if (!stock) {
@@ -65,5 +66,5 @@ export default defineEventHandler(async (event) => {
     // console.log('Remains length: ', remains.length);
   }
 
-  return { status: 'success', items: remains, skus: skus, goodsCount: skus.length };
+  return { status: 'success', items: remains, skus: skus, goodsCount: skus.length, allGoods: allGoods?.items ?? [] };
 });

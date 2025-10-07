@@ -1,4 +1,5 @@
 import type { ApiResponse } from '#shared/types';
+import type { getGoodsResponse, GoodItem } from '#shared/Good/types';
 
 export type RemainGoodItem = {
   ads: number;
@@ -39,4 +40,5 @@ export type getRemainsApiResponse = ApiResponse & {
   items: RemainGoodItem[];
   goodsCount: number;
   skus: string[];
+  allGoods: GoodItem[];
 };
