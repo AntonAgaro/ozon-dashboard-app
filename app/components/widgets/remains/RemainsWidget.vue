@@ -30,7 +30,7 @@ const clusterOrder = computed<Cluster[]>(() => {
   const map = new Map<number, string>();
   for (const goodRemainItem of props.items) {
     const { cluster_id, cluster_name } = goodRemainItem;
-    if (!map.has(cluster_id)) map.set(cluster_id, cluster_name);
+    if (cluster_id && !map.has(cluster_id)) map.set(cluster_id, cluster_name);
   }
   return Array.from(map, ([id, name]) => ({ id, name }));
 });
@@ -70,7 +70,7 @@ const uiRows = computed(() => {
     //Формируем колонки по каждому кластеру
     const good = byGood.get(offer_id)!;
     const clusterName = `cluster-${cluster_id}`;
-    good.cells[clusterName] = available_stock_count ?? 0;
+    good.cells[clusterName] = (good.cells[clusterName] ?? 0) + (available_stock_count ?? 0);
     good.cells['remains'] = (good.cells['remains'] ?? 0) + (available_stock_count ?? 0);
   }
 

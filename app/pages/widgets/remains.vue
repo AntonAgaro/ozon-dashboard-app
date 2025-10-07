@@ -22,9 +22,9 @@ if (!remainsRes.items && !Array.isArray(remainsRes.items)) {
 }
 
 //Докидываю товары, по которым нет данных в ответе по остаткам, чтобы их тоже отобразить в таблице
-const uniqueGoodsSkuWithRemainingsData = new Set([...remainsRes.items.map((i) => i.sku.toString())]);
-const missingGoodsSku = remainsRes.skus.filter((i) => !uniqueGoodsSkuWithRemainingsData.has(i));
-const missingGoodsItemsWithStubsRemainings = missingGoodsSku.map((sku) => {
+const uniqueGoodsSkuWithRemainsData = new Set([...remainsRes.items.map((i) => i.sku.toString())]);
+const missingGoodsSku = remainsRes.skus.filter((i) => !uniqueGoodsSkuWithRemainsData.has(i));
+const missingGoodsItemsWithStubsRemains = missingGoodsSku.map((sku) => {
   const goodObject = remainsRes.allGoods.find((good) => good.stocks[0]?.sku === +sku);
   if (!goodObject) {
     console.log(`good object for sku: ${sku} was not found!`);
@@ -33,10 +33,10 @@ const missingGoodsItemsWithStubsRemainings = missingGoodsSku.map((sku) => {
   return { sku: +sku, name: goodObject?.offer_id, offer_id: goodObject?.offer_id } as RemainGoodItem;
 });
 
-tableItems.value = [...remainsRes.items, ...missingGoodsItemsWithStubsRemainings];
+tableItems.value = [...remainsRes.items, ...missingGoodsItemsWithStubsRemains];
 
 onMounted(() => {
-  console.log('Товары без данных по остаткам: ', missingGoodsItemsWithStubsRemainings);
+  console.log('Товары без данных по остаткам: ', missingGoodsItemsWithStubsRemains);
 
   // const uniqs = new Set([...remainsRes.items.map((i) => i.sku.toString())]);
   // console.log(uniqs);
