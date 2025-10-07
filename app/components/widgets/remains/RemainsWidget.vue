@@ -3,8 +3,8 @@
     <UCard>
       <div class="flex items-center justify-between gap-3 mb-3">
         <h2 class="text-xl font-semibold">Остатки товаров</h2>
-        <div v-if="props.goodsCount && clusterOrder.length" class="text-sm text-gray-500">
-          <span>{{ props.goodsCount }} товаров</span>
+        <div v-if="itemsCount && clusterOrder.length" class="text-sm text-gray-500">
+          <span>{{ itemsCount }} товаров</span>
           <span class="mx-1">•</span>
           <span>{{ clusterOrder.length }} складов / clusters</span>
         </div>
@@ -33,6 +33,11 @@ const clusterOrder = computed<Cluster[]>(() => {
     if (!map.has(cluster_id)) map.set(cluster_id, cluster_name);
   }
   return Array.from(map, ([id, name]) => ({ id, name }));
+});
+
+const itemsCount = computed(() => {
+  const uniques = new Set<number>([...props.items.map((i) => i.sku)]);
+  return uniques.size;
 });
 
 //Собираем колонки. Товары, Остатки, Остатки по каждому кластеру
