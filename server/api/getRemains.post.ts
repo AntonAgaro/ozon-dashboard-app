@@ -1,4 +1,4 @@
-import type { getGoodsResponse } from '#shared/Good/types';
+import type { getGoodsResponse, GoodItem } from '#shared/Good/types';
 import type { getRemainsOzonResponse, RemainGoodItem } from '#shared/Remains/types';
 
 export default defineEventHandler(async (event) => {
@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const API_KEY = process.env.API_KEY ?? '';
   const skus: string[] = body?.skus ?? [];
   let allGoods: getGoodsResponse | null = null;
+  const goodsWithoutSku: GoodItem[] = [];
 
   if (!body?.skus) {
     const goodsRes = await nitro.localFetch('/api/getGoods', {
@@ -30,7 +31,8 @@ export default defineEventHandler(async (event) => {
       const stock = good?.stocks[0];
 
       if (!stock) {
-        console.error(`No stocks for ${good}`);
+        console.error(`No stocks for good with offer_id ${good.offer_id}`);
+        goodsWithoutSku.push(good);
         return;
       }
 
@@ -66,5 +68,12 @@ export default defineEventHandler(async (event) => {
     // console.log('Remains length: ', remains.length);
   }
 
-  return { status: 'success', items: remains, skus: skus, goodsCount: skus.length, allGoods: allGoods?.items ?? [] };
+  return {
+    status: 'success',
+    items: remains,
+    skus: skus,
+    goodsCount: skus.length,
+    allGoods: allGoods?.items ?? [],
+    goodsWithoutSku,
+  };
 });

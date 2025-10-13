@@ -41,4 +41,5 @@ export type getRemainsApiResponse = ApiResponse & {
   goodsCount: number;
   skus: string[];
   allGoods: GoodItem[];
+  goodsWithoutSku: GoodItem[];
 };

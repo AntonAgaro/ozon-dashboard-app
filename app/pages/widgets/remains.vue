@@ -37,6 +37,7 @@ tableItems.value = [...remainsRes.items, ...missingGoodsItemsWithStubsRemains];
 
 onMounted(() => {
   console.log('Товары без данных по остаткам: ', missingGoodsItemsWithStubsRemains);
+  console.log('Товары без sku: ', remainsRes.goodsWithoutSku);
 
   // const uniqs = new Set([...remainsRes.items.map((i) => i.sku.toString())]);
   // console.log(uniqs);
