@@ -73,7 +73,7 @@ const uiRows = computed(() => {
     const clusterName = `cluster-${cluster_id}`;
     good.cells[clusterName] = (good.cells[clusterName] ?? 0) + (available_stock_count ?? 0);
     good.cells['remains'] = (good.cells['remains'] ?? 0) + (available_stock_count ?? 0);
-    good.cells['sales'] = good.cells['sales'] ?? ads ?? 0;
+    good.cells['sales'] = good.cells['sales'] ?? (ads ?? 0) * 28;
   }
 
   // console.log(byGood);
@@ -83,7 +83,7 @@ const uiRows = computed(() => {
       goodId: good.goodId,
       class: { td: 'c-red' },
       remains: good.cells['remains'] ?? 0,
-      sales: good.cells['sales']?.toFixed(4) ?? 0,
+      sales: good.cells['sales']?.toFixed(1) ?? 0,
     };
     for (const cluster of clusterOrder.value) {
       row[`cluster-${cluster.id}`] = good.cells[`cluster-${cluster.id}`] ?? 0;
