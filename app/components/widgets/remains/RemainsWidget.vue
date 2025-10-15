@@ -83,7 +83,7 @@ const uiRows = computed(() => {
       goodId: good.goodId,
       class: { td: 'c-red' },
       remains: good.cells['remains'] ?? 0,
-      sales: good.cells['sales']?.toFixed(1) ?? 0,
+      sales: Math.round(good.cells['sales'] ?? 0),
     };
     for (const cluster of clusterOrder.value) {
       row[`cluster-${cluster.id}`] = good.cells[`cluster-${cluster.id}`] ?? 0;
