@@ -11,6 +11,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['tests/setup.ts'],
     environmentMatchGlobs: [['tests/server/**', 'node']],
+    include: ['tests/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    exclude: ['e2e/**', '**/*.e2e.*', 'playwright/**', 'node_modules/**', 'dist/**', '.nuxt/**'],
     coverage: {
       reporter: ['text', 'html'],
     },

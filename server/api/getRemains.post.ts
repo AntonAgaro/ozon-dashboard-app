@@ -10,6 +10,26 @@ export default defineEventHandler(async (event) => {
   let allGoods: getGoodsResponse | null = null;
   const goodsWithoutSku: GoodItem[] = [];
 
+  // E2E mode: return deterministic mock without external calls
+  if (process.env.E2E === '1' || process.env.NUXT_E2E === '1') {
+    const mockSkus = skus.length ? skus : ['1001', '1002'];
+    const items: RemainGoodItem[] = [
+      { offer_id: 'GOOD-1', sku: Number(mockSkus[0]), cluster_id: 1, cluster_name: 'Склад 1', available_stock_count: 5, ads: 1 } as RemainGoodItem,
+      { offer_id: 'GOOD-2', sku: Number(mockSkus[1] ?? '1002'), cluster_id: 2, cluster_name: 'Склад 2', available_stock_count: 7, ads: 1 } as RemainGoodItem,
+    ];
+    return {
+      status: 'success',
+      items,
+      skus: mockSkus,
+      goodsCount: mockSkus.length,
+      allGoods: [
+        { offer_id: 'GOOD-1', stocks: [{ sku: Number(mockSkus[0]) }] } as any,
+        { offer_id: 'GOOD-2', stocks: [{ sku: Number(mockSkus[1] ?? '1002') }] } as any,
+      ],
+      goodsWithoutSku,
+    };
+  }
+
   if (!body?.skus) {
     const goodsRes = await nitro.localFetch('/api/getGoods', {
       method: 'POST',
