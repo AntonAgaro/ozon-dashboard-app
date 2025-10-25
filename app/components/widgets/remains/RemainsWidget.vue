@@ -69,7 +69,6 @@ const displayClusterOrder = computed<Cluster[]>(() => {
     const add = Number(item.available_stock_count ?? 0);
     byCluster.set(clusterId, prev + add);
   }
-  console.log('byCluster: ', byCluster);
   // сортируем от большего к меньшему, чтобы самые большие оказались слева
   const baseIndex = new Map<number, number>(clusterOrder.value.map((c, i) => [c.id, i]));
   return [...clusterOrder.value].sort((a, b) => {
@@ -146,10 +145,8 @@ const sortTarget = ref<string | null>(null);
 function onGoodClick(row: Record<string, any>) {
   const goodId = row?.goodId as string | undefined;
   if (!goodId) return;
-  console.log('goodId: ', goodId);
   // toggle: clicking same good removes sorting
   activeClusterSortGoodId.value = activeClusterSortGoodId.value === goodId ? null : goodId;
-  console.log('activeClusterSortGoodId.value: ', activeClusterSortGoodId.value);
 }
 
 // Helpers for table slot typing
