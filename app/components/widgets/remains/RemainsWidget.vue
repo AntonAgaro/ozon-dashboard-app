@@ -8,10 +8,23 @@
           <span class="mx-1">•</span>
           <span>{{ clusterOrder.length }} складов / clusters</span>
         </div>
-        <UButton size="sm" @click="exportToCsv">💾 Export CSV</UButton>
+        <div class="flex items-center gap-2">
+          <UInput v-model="searchQuery" size="sm" placeholder="Поиск товара" />
+          <UButton size="sm" @click="exportToCsv">💾 Export CSV</UButton>
+        </div>
       </div>
     </UCard>
-    <UTable :sticky="true" class="mt-6 sticky-first-col h-[80vh]" :columns="uiColumns" :data="uiRows"> </UTable>
+    <UTable :sticky="true" class="mt-6 sticky-first-col h-[80vh]" :columns="uiColumns" :data="filteredSortedRows">
+      <template #goodId-cell="{ row }">
+        <span
+          class="block w-full h-full px-2 py-1 cursor-pointer"
+          :class="{ 'active-good': isActiveGood(row) }"
+          @click="onGoodClick(getRowOriginal(row))"
+        >
+          {{ getGoodIdFromRow(row) }}
+        </span>
+      </template>
+    </UTable>
   </div>
 </template>
 
@@ -25,7 +38,7 @@ const props = defineProps<{
 }>();
 
 //TODO убрать те, у которых вообще нет товаров
-//Список кластеров
+//Список кластеров (базовый порядок)
 const clusterOrder = computed<Cluster[]>(() => {
   const map = new Map<number, string>();
   for (const goodRemainItem of props.items) {
@@ -40,6 +53,34 @@ const itemsCount = computed(() => {
   return uniques.size;
 });
 
+// Динамический порядок кластеров для отображения
+const activeClusterSortGoodId = ref<string | null>(null);
+const displayClusterOrder = computed<Cluster[]>(() => {
+  if (!activeClusterSortGoodId.value) {
+    return clusterOrder.value;
+  }
+  // Считаем остатки по кластерам для выбранного товара напрямую из исходных items
+  const byCluster = new Map<number, number>();
+  for (const item of props.items) {
+    if (item.offer_id !== activeClusterSortGoodId.value) continue;
+    const clusterId = Number(item.cluster_id);
+    if (!Number.isFinite(clusterId)) continue;
+    const prev = Number(byCluster.get(clusterId) ?? 0);
+    const add = Number(item.available_stock_count ?? 0);
+    byCluster.set(clusterId, prev + add);
+  }
+  console.log('byCluster: ', byCluster);
+  // сортируем от большего к меньшему, чтобы самые большие оказались слева
+  const baseIndex = new Map<number, number>(clusterOrder.value.map((c, i) => [c.id, i]));
+  return [...clusterOrder.value].sort((a, b) => {
+    const av = Number(byCluster.get(a.id) ?? 0);
+    const bv = Number(byCluster.get(b.id) ?? 0);
+    if (av !== bv) return bv - av;
+    // стабильная сортировка при равенстве по исходному порядку
+    return (baseIndex.get(a.id) ?? 0) - (baseIndex.get(b.id) ?? 0);
+  });
+});
+
 //Собираем колонки. Товары, Остатки, Остатки по каждому кластеру
 type Col = { accessorKey: string; header: string };
 const uiColumns = computed(() => {
@@ -48,7 +89,7 @@ const uiColumns = computed(() => {
     { accessorKey: 'remains', header: 'Остаток' },
     { accessorKey: 'sales', header: 'Продажи' },
   ];
-  for (const cluster of clusterOrder.value) {
+  for (const cluster of displayClusterOrder.value) {
     cols.push({ accessorKey: `cluster-${cluster.id}`, header: cluster.name });
   }
   return cols;
@@ -81,19 +122,67 @@ const uiRows = computed(() => {
   const rows = Array.from(byGood.values()).map((good) => {
     const row: Record<string, any> = {
       goodId: good.goodId,
-      class: { td: 'c-red' },
+      class: {
+        td: 'c-red',
+      },
       remains: good.cells['remains'] ?? 0,
       sales: Math.round(good.cells['sales'] ?? 0),
     };
-    for (const cluster of clusterOrder.value) {
+    for (const cluster of displayClusterOrder.value) {
       row[`cluster-${cluster.id}`] = good.cells[`cluster-${cluster.id}`] ?? 0;
     }
     return row;
   });
 
-  // console.log('ROWS: ', rows);
-
   return rows;
+});
+
+// Поиск и сортировка
+const searchQuery = ref('');
+const sortDirection = ref<'asc' | 'desc'>('desc');
+// value can be 'remains' | `cluster-${id}` or null for no sort
+const sortTarget = ref<string | null>(null);
+
+function onGoodClick(row: Record<string, any>) {
+  const goodId = row?.goodId as string | undefined;
+  if (!goodId) return;
+  console.log('goodId: ', goodId);
+  // toggle: clicking same good removes sorting
+  activeClusterSortGoodId.value = activeClusterSortGoodId.value === goodId ? null : goodId;
+  console.log('activeClusterSortGoodId.value: ', activeClusterSortGoodId.value);
+}
+
+// Helpers for table slot typing
+function getRowOriginal(row: unknown): Record<string, any> {
+  return (row as any)?.original as Record<string, any>;
+}
+
+function getGoodIdFromRow(row: unknown): string {
+  const original = getRowOriginal(row);
+  return String(original?.goodId ?? '');
+}
+
+function isActiveGood(row: unknown): boolean {
+  const id = getGoodIdFromRow(row);
+  return !!id && activeClusterSortGoodId.value === id;
+}
+
+const filteredSortedRows = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase();
+  let rows = uiRows.value;
+  if (q) {
+    rows = rows.filter((r) => String(r.goodId).toLowerCase().includes(q));
+  }
+
+  const key = sortTarget.value;
+  if (!key) return rows;
+  const dir = sortDirection.value === 'desc' ? -1 : 1;
+  return [...rows].sort((a, b) => {
+    const av = Number(a[key] ?? 0);
+    const bv = Number(b[key] ?? 0);
+    if (av === bv) return 0;
+    return av > bv ? dir : -dir;
+  });
 });
 
 function exportToCsv() {
@@ -133,6 +222,11 @@ function exportToCsv() {
   cursor: pointer;
 }
 
+/* Active good: color the first cell TD background via :has on child span */
+.sticky-first-col td:first-child:has(.active-good) {
+  background: rgba(10, 196, 78, 0.5); /* brighter green */
+}
+
 html.dark .sticky-first-col td {
   color: white;
   &:first-child {
@@ -141,11 +235,21 @@ html.dark .sticky-first-col td {
   }
 }
 
+/* Dark mode active-good override */
+html.dark .sticky-first-col td:first-child:has(.active-good) {
+  background: color-mix(in oklab, rgb(22 163 74) 45%, transparent); /* brighter in dark */
+}
+
 html.Light .sticky-first-col td {
   color: oklch(12.9% 0.042 264.695);
 
   &:first-child {
     background: oklch(82.8% 0.111 230.318);
   }
+}
+
+/* Light mode active-good override (place after Light block to win) */
+html.Light .sticky-first-col td:first-child:has(.active-good) {
+  background: rgba(22, 163, 74, 0.5);
 }
 </style>
