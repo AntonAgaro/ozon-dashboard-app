@@ -11,6 +11,7 @@
         <div class="flex items-center gap-2">
           <UInput v-model="searchQuery" size="sm" placeholder="Поиск товара" />
           <UButton size="sm" @click="exportToCsv">💾 Export CSV</UButton>
+          <UButton>TEST</UButton>
         </div>
       </div>
     </UCard>
@@ -195,6 +196,12 @@ function exportToCsv() {
     if (col.accessorKey.startsWith('cluster-')) {
       headers.push('');
       keys.push('');
+    }
+
+    //Add Orders col before clusters
+    if (col.accessorKey === 'sales') {
+      headers.push('Заказы');
+      keys.push('Orders');
     }
   }
 
