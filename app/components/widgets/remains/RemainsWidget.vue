@@ -183,8 +183,20 @@ const filteredSortedRows = computed(() => {
 });
 
 function exportToCsv() {
-  const headers = uiColumns.value.map((c) => c.header);
-  const keys = uiColumns.value.map((c) => c.accessorKey);
+  // Build headers and keys with empty columns after each cluster
+  const headers: string[] = [];
+  const keys: string[] = [];
+
+  for (const col of uiColumns.value) {
+    headers.push(col.header);
+    keys.push(col.accessorKey);
+
+    // Add empty column after each cluster column
+    if (col.accessorKey.startsWith('cluster-')) {
+      headers.push('');
+      keys.push('');
+    }
+  }
 
   const escapeCsv = (val: any) => {
     if (val == null) return '';
