@@ -163,7 +163,7 @@ describe('RemainsWidget', () => {
 
     const csv = text.slice(1); // remove BOM for assertions
     // Header should include base columns and cluster names (quoted)
-    expect(csv.split('\r\n')[0]).toContain('"Товары";"Остаток";"Дней без продаж";"Продажи"');
+    expect(csv.split('\r\n')[0]).toContain('"Товары";"Остаток";"Продажи"');
     expect(csv).toContain('Склад 1');
     expect(csv).toContain('Склад 2');
 

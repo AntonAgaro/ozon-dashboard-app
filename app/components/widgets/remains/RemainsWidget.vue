@@ -86,7 +86,6 @@ const uiColumns = computed(() => {
   const cols: Col[] = [
     { accessorKey: 'goodId', header: 'Товары' },
     { accessorKey: 'remains', header: 'Остаток' },
-    { accessorKey: 'days_without_sales', header: 'Дней без продаж' },
     { accessorKey: 'sales', header: 'Продажи' },
   ];
   for (const cluster of displayClusterOrder.value) {
@@ -103,7 +102,7 @@ const uiRows = computed(() => {
 
   for (const goodRemainItem of props.items) {
     //Артикул, кластер, остаток
-    const { offer_id, cluster_id, available_stock_count, ads, days_without_sales } = goodRemainItem;
+    const { offer_id, cluster_id, available_stock_count, ads } = goodRemainItem;
 
     if (!byGood.has(offer_id)) {
       byGood.set(offer_id, { goodId: offer_id, cells: {} });
@@ -114,7 +113,6 @@ const uiRows = computed(() => {
     const clusterName = `cluster-${cluster_id}`;
     good.cells[clusterName] = (good.cells[clusterName] ?? 0) + (available_stock_count ?? 0);
     good.cells['remains'] = (good.cells['remains'] ?? 0) + (available_stock_count ?? 0);
-    good.cells['days_without_sales'] = good.cells['days_without_sales'] ?? days_without_sales;
     good.cells['sales'] = good.cells['sales'] ?? (ads ?? 0) * 28;
   }
 
@@ -127,7 +125,6 @@ const uiRows = computed(() => {
         td: 'c-red',
       },
       remains: good.cells['remains'] ?? 0,
-      days_without_sales: good.cells['days_without_sales'] ?? '-',
       sales: Math.round(good.cells['sales'] ?? 0),
     };
     for (const cluster of displayClusterOrder.value) {
